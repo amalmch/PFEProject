@@ -1,3 +1,4 @@
+
 package com.example.demo.entities;
 
 import org.springframework.data.annotation.Id;
