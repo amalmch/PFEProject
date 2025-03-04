@@ -1,8 +1,11 @@
-
 package com.example.demo.entities;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Document(collection = "users")
 public class UserEntity {
@@ -16,16 +19,36 @@ public class UserEntity {
     private String password;
     private String CIN;
     private String phoneNumber;
+    private String email;
+    private String profileImage;  // Added field to store the image path or URL
+
+    @DBRef
+    private List<Role> roles = new ArrayList<>();  // Default roles list initialization
 
     public UserEntity() {}
 
-    public UserEntity(String firstName, String lastName, String username, String password, String CIN, String phoneNumber) {
+    public UserEntity(String firstName, String lastName, String username, String password, String CIN, String phoneNumber, String email, String profileImage) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.username = username;
+        this.username = generateUsername(firstName, lastName);  // Generate username
         this.password = password;
         this.CIN = CIN;
         this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.profileImage = profileImage;
+    }
+
+    private String generateUsername(String firstName, String lastName) {
+        return (firstName.length() > 1 ? firstName.substring(0, 2).toLowerCase() : "") +
+                (lastName.length() > 1 ? lastName.substring(0, 2).toLowerCase() : "");
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     public String getId() {
@@ -82,5 +105,21 @@ public class UserEntity {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 }

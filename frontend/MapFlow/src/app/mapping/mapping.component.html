@@ -1,0 +1,31 @@
+<div class="mapping-container">
+    <h2>Simple Mapping [Mapper_GENERALL_MT502_SETR.004_V1]</h2>
+    <div class="mapping-info">
+      <p><strong>Identifier:</strong> Mapper_GENERALL_MT502_SETR.004_V1</p>
+      <p><strong>Based on:</strong> ______</p>
+    </div>
+  
+    <button class="generate-button" (click)="generateMappings()" [disabled]="isLoading">
+      {{ isLoading ? 'Generating...' : 'Generate Mapping' }}
+    </button>
+  
+    <div *ngIf="mappings.length > 0" class="mapping-table">
+      <div class="table-header">
+        <div class="source-column">Source</div>
+        <div class="target-column">Target</div>
+      </div>
+  
+      <div *ngFor="let mapping of mappings; let i = index" class="mapping-row">
+        <div class="source-column">
+          {{ mapping.source }}
+        </div>
+        <div class="target-column">
+          <input [(ngModel)]="mappings[i].target" placeholder="Target Field"/>
+        </div>
+      </div>
+    </div>
+  
+    <button *ngIf="mappings.length > 0" class="save-button" (click)="saveMappings()">Save Mappings</button>
+    <button *ngIf="mappings.length > 0" class="download-button" (click)="downloadMappings()">Download Mappings</button>
+  </div>
+  

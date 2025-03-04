@@ -3,12 +3,17 @@ package com.example.demo.entities;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+
 @Document(collection = "role")
 public class Role {
     private String id;
     private RoleName roleName;
     @DBRef
     private UserEntity user;
+
+    public Role() {
+    }
+
     //getters and setters
     public String getId() {
         return id;

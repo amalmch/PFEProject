@@ -1,0 +1,7 @@
+<div class="upload-container">
+    <h2>Upload SWIFT File</h2>
+    <input type="file" (change)="onFileSelected($event)" class="file-input" />
+    <button (click)="uploadFile()" [disabled]="!selectedFile">Process File</button>
+    <div *ngIf="message" class="message">{{ message }}</div> <!-- Success/Failure Message -->
+  </div>
+  
