@@ -1,11 +1,7 @@
 package com.example.demo.entities;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Document(collection = "users")
 public class UserEntity {
@@ -15,41 +11,16 @@ public class UserEntity {
 
     private String firstName;
     private String lastName;
-    private String username;
-    private String password;
-    private String CIN;
-    private String phoneNumber;
     private String email;
-    private String profileImage;  // Added field to store the image path or URL
+    private String password;
+    private String phoneNumber;
+    private String username;
 
-    @DBRef
-    private List<Role> roles = new ArrayList<>();  // Default roles list initialization
+    private Role role;  // This will represent a single Role
 
-    public UserEntity() {}
+    private String profileImage;  // Optional, if you want to store a profile image path
 
-    public UserEntity(String firstName, String lastName, String username, String password, String CIN, String phoneNumber, String email, String profileImage) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.username = generateUsername(firstName, lastName);  // Generate username
-        this.password = password;
-        this.CIN = CIN;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.profileImage = profileImage;
-    }
-
-    private String generateUsername(String firstName, String lastName) {
-        return (firstName.length() > 1 ? firstName.substring(0, 2).toLowerCase() : "") +
-                (lastName.length() > 1 ? lastName.substring(0, 2).toLowerCase() : "");
-    }
-
-    public List<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
-    }
+    // Getters and Setters for all fields
 
     public String getId() {
         return id;
@@ -75,12 +46,12 @@ public class UserEntity {
         this.lastName = lastName;
     }
 
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -91,14 +62,6 @@ public class UserEntity {
         this.password = password;
     }
 
-    public String getCIN() {
-        return CIN;
-    }
-
-    public void setCIN(String CIN) {
-        this.CIN = CIN;
-    }
-
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -107,12 +70,20 @@ public class UserEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 
     public String getProfileImage() {

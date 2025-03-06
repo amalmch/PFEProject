@@ -1,11 +1,15 @@
 package com.example.demo.controllers;
 
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entities.Role;
 import com.example.demo.entities.RoleName;
 import com.example.demo.entities.UserEntity;
+import com.example.demo.repositories.RoleRepository;
+import com.example.demo.repositories.UserRepository;
 import com.example.demo.security.util.JwtTokenUtil;
 import com.example.demo.services.EmailService;
 import com.example.demo.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -28,6 +32,12 @@ public class UserController {
     private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
     public UserController(UserService userService, JwtTokenUtil jwtTokenUtil, EmailService emailService, BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.jwtTokenUtil = jwtTokenUtil;
@@ -36,63 +46,68 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> createUser(@RequestParam("firstName") String firstName,
-                                                          @RequestParam("lastName") String lastName,
-                                                          @RequestParam("email") String email,
-                                                          @RequestParam("password") String password,
-                                                          @RequestParam("confirmPassword") String confirmPassword,
-                                                          @RequestParam("phoneNumber") String phoneNumber,
-                                                          @RequestParam("role") String role, // Role as a String
-                                                          @RequestParam(value = "image", required = false) MultipartFile image) {
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody UserDTO userDTO) {
         // Validate required fields
-        if (firstName == null || lastName == null || email == null || password == null || phoneNumber == null) {
+        if (userDTO.getFirstName() == null || userDTO.getLastName() == null || userDTO.getEmail() == null ||
+                userDTO.getPassword() == null || userDTO.getPhoneNumber() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "All fields must be provided"));
         }
 
         // Validate if passwords match
-        if (!password.equals(confirmPassword)) {
+        if (!userDTO.getPassword().equals(userDTO.getConfirmPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Passwords do not match"));
+        }
+
+        // Validate role
+        RoleName roleName;
+        try {
+            roleName = RoleName.valueOf(userDTO.getRole().toUpperCase());  // Convert the string to RoleName enum
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Invalid role provided"));
         }
 
         try {
             // Generate username
-            String username = firstName.substring(0, 2) + lastName.substring(0, 2);
-
-            // Create the Role from the RoleName enum
-            RoleName roleName = RoleName.valueOf(role.toUpperCase()); // Convert the string to RoleName enum
-            Role userRole = new Role();
-            userRole.setRoleName(roleName);
+            String username = userDTO.getFirstName().substring(0, 2) + userDTO.getLastName().substring(0, 2);
 
             // Hash the password before saving
-            String hashedPassword = passwordEncoder.encode(password); // Assuming you have a passwordEncoder bean
+            String hashedPassword = passwordEncoder.encode(userDTO.getPassword());
 
             // Create user entity
             UserEntity user = new UserEntity();
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setEmail(email);
-            user.setPassword(hashedPassword); // Save the hashed password
-            user.setPhoneNumber(phoneNumber);
+            user.setFirstName(userDTO.getFirstName());
+            user.setLastName(userDTO.getLastName());
+            user.setEmail(userDTO.getEmail());
+            user.setPassword(hashedPassword);
+            user.setPhoneNumber(userDTO.getPhoneNumber());
             user.setUsername(username);
-            user.setRoles(Arrays.asList(userRole)); // Set the roles (with the Role object)
+
+            // Save user to database first to generate the ID
+            user = userRepository.save(user);
+
+            // Create the Role object and assign it to the user
+            Role userRole = new Role();
+            userRole.setRoleName(roleName); // Role from request body
+            userRole.setUser(user); // Set the user in the role
+
+            // Save the role (role will now have a reference to the user)
+            roleRepository.save(userRole);
 
             // Handle image upload if provided
-            if (image != null && !image.isEmpty()) {
+            if (userDTO.getImage() != null && !userDTO.getImage().isEmpty()) {
                 // Save the image file (image saving logic goes here)
-                String imagePath = saveImage(image);
+                String imagePath = saveImage(userDTO.getImage());
                 user.setProfileImage(imagePath); // Assuming you add an image field in the UserEntity
+                userRepository.save(user); // Save user again with the image
             }
 
-            // Save user to database
-            UserEntity createdUser = userService.createUser(user);
-
-            // Send a welcome email (email sending logic goes here)
+            // Send welcome email
             sendWelcomeEmail(user);
 
-            // Prepare the response body with user data (but no token generated here)
+            // Prepare the response body with user data
             Map<String, Object> response = new HashMap<>();
             response.put("message", "User successfully added");
-            response.put("user", createdUser);
+            response.put("user", user);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (Exception e) {
@@ -117,11 +132,21 @@ public class UserController {
                 + "First Name: " + user.getFirstName() + "\n"
                 + "Last Name: " + user.getLastName() + "\n"
                 + "Phone Number: " + user.getPhoneNumber() + "\n"
-                + "Username: " + user.getUsername() + "\n"
-                + "Password: " + user.getPassword(); // In real-world applications, don't send passwords in plain text
+                + "Username: " + user.getUsername() + "\n\n"
+                + "Thank you for joining us!";
 
-        emailService.sendEmail(user.getEmail(), subject, body); // Sending email
+        emailService.sendEmail(user.getEmail(), subject, body);
     }
+
+    @PostMapping("/sendTestEmail")
+    public ResponseEntity<String> sendTestEmail() {
+        String to = "test@example.com";  // Use a valid test email address
+        String subject = "Test Email";
+        String body = "This is a test email!";
+        emailService.sendEmail(to, subject, body);
+        return ResponseEntity.ok("Test email sent successfully!");
+    }
+
 
 
     // Endpoint to get all Users
