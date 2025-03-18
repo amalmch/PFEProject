@@ -9,7 +9,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { UploadComponent } from './upload/upload.component';
 import { HttpClientModule } from '@angular/common/http';
 import { MappingComponent } from './mapping/mapping.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -24,7 +24,8 @@ import { FormsModule } from '@angular/forms';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule  
+    FormsModule,
+    ReactiveFormsModule  
   ],
   providers: [],
   bootstrap: [AppComponent]

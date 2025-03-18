@@ -16,8 +16,7 @@ public class UserEntity {
     private String phoneNumber;
     private String username;
 
-    private Role role;  // This will represent a single Role
-
+    private RoleName role;
     private String profileImage;  // Optional, if you want to store a profile image path
 
     // Getters and Setters for all fields
@@ -78,11 +77,11 @@ public class UserEntity {
         this.username = username;
     }
 
-    public Role getRole() {
+    public RoleName getRole() {
         return role;
     }
 
-    public void setRole(Role role) {
+    public void setRole(RoleName role) {
         this.role = role;
     }
 

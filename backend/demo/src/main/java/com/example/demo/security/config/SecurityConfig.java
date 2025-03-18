@@ -52,7 +52,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless session management
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/users/login", "/users/add", "/users/update/**", "/api/users/getUserById/**", "/api/roles/get/**").permitAll() // Add leading slashes
+                        .requestMatchers("/users/login", "/users/add", "/users/update/**", "/users/getUserById/**","/users/updateUser/**", "/api/roles/get/**").permitAll() // Add leading slashes
+                        .requestMatchers("/roles/get").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow OPTIONS requests
                         .anyRequest().authenticated() // Require authentication for all other requests
                 );

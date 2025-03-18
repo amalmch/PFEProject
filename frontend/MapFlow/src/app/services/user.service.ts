@@ -6,7 +6,7 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'http://localhost:8082/api/user/add';  // Adjust URL to match your backend
+  private apiUrl = 'http://localhost:8082/api/users/add';  // Adjust URL to match your backend
 
   constructor(private http: HttpClient) { }
 

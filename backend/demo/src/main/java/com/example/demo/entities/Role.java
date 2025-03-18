@@ -1,6 +1,8 @@
 // Role.java
 package com.example.demo.entities;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
@@ -9,6 +11,7 @@ import org.springframework.data.annotation.Id;
 public class Role {
     @Id
     private String id;
+    @Enumerated(EnumType.STRING)
     private RoleName roleName;
 
     @DBRef

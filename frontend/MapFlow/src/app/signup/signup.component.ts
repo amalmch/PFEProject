@@ -32,9 +32,9 @@ export class SignupComponent {
 
   loadRoles(): void {
     this.roleService.getRoles().subscribe(
-      (roles: any[]) => {
-        // Map roles to just their roleName strings for the dropdown
-        this.roles = roles.map(role => role.roleName);
+      (roles: string[]) => {  
+        this.roles = roles;  
+        console.log(this.roles);  // Log roles to confirm they're being fetched correctly
       },
       (error) => {
         console.error('Error fetching roles:', error);

@@ -1,33 +1,32 @@
 <div class="container">
-<div class="wrapper">
-      <form action="#">
-        <div class="avatar">
-          <img src="assets/user-profile.jpg" alt="User Avatar">
-        </div>
-        <h2>Login</h2>
-          <div class="input-field">
-          <i a  & nput type="text" required>
-          <label>Enter your email</label>
-          </i>
-          </div>
+  <div class="wrapper">
+    <form (ngSubmit)="onSubmit()" [formGroup]="loginForm">
+      <div class="avatar">
+        <img src="assets/user-profile.jpg" alt="User Avatar">
+      </div>
+      <h2>Login</h2>
 
-        <div class="input-field">
-          <input type="password" required>
-          <label>Enter your password</label>
-        </div>
-        <div class="forget">
-          <label for="remember">
-            <input type="checkbox" id="remember">
-            <p>Remember me</p>
-          </label>
-          <a href="#">Forgot password?</a>
-        </div>
-        <button type="submit">Log In</button>
-        <div class="register">
-          <p>Don't have an account? <a routerLink="/signup">Register</a></p>
-        </div>
+      <div class="input-field">
+        <input type="text" formControlName="username" required>
+        <label>Enter your email</label>
+      </div>
 
-        
-      </form>
-    </div>
-</div>  
+      <div class="input-field">
+        <input type="password" formControlName="password" required>
+        <label>Enter your password</label>
+      </div>
+
+      <div class="forget">
+        <label for="remember">
+          <input type="checkbox" id="remember">
+          <p>Remember me</p>
+        </label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <button type="submit" [disabled]="loginForm.invalid">Log In</button>
+      <div class="register">
+        <p>Don't have an account? <a routerLink="/signup">Register</a></p>
+      </div>
+    </form>
+  </div>
+</div>

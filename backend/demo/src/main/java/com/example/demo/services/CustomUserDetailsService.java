@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.Role;
+import com.example.demo.entities.RoleName;
 import com.example.demo.entities.UserEntity;
 import com.example.demo.repositories.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,7 +35,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     // This method now maps a single Role to a GrantedAuthority
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Role role) {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(RoleName roleName) {
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + roleName.name()));
     }
+
 }

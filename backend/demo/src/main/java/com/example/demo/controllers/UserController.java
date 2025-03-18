@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/users")
 public class UserController {
 
@@ -95,10 +96,14 @@ public class UserController {
 
             // Handle image upload if provided
             if (userDTO.getImage() != null && !userDTO.getImage().isEmpty()) {
-                // Save the image file (image saving logic goes here)
-                String imagePath = saveImage(userDTO.getImage());
-                user.setProfileImage(imagePath); // Assuming you add an image field in the UserEntity
-                userRepository.save(user); // Save user again with the image
+                try {
+                    String imagePath = saveImage(userDTO.getImage());  // Save the image
+                    user.setProfileImage(imagePath);  // Save the image path in the user entity
+                    userRepository.save(user);  // Update user with image path
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Failed to upload image"));
+                }
             }
 
             // Send welcome email
